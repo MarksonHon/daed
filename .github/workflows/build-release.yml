@@ -217,33 +217,40 @@ jobs:
           pushd build || exit 1
           if [ "$GOARCH" == "amd64" ]; then
             if [ "$GOAMD64" == "v1" ]; then
-            fpm -s dir -t pacman -a amd64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-              --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
-              ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-              ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
-            fpm -s dir -t deb -a amd64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-              --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
-              ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-              ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
-            fpm -s dir -t rpm -a amd64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-              --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
-              ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-              ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+              for package_manager in deb rpm pacman; do
+                fpm -s dir -t "$package_manager" -a amd64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
+                  --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
+                  ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
+                  ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+              done
             fi
-          # elif [ "$GOARCH" == "arm" ]; then
-          # elif [ "$GOARCH" == "arm64" ]; then
+          elif [ "$GOARCH" == "arm" ] && [ "$GOARM" == '7' ]; then
+            for package_manager in deb rpm pacman; do
+              fpm -s dir -t "$package_manager" -a armhf --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
+                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
+                ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
+                ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+            done
+          elif [ "$GOARCH" == "arm64" ]; then
+            for package_manager in deb rpm pacman; do
+              fpm -s dir -t "$package_manager" -a arm64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
+                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
+                ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
+                ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+            done
           fi
           popd || exit 1
-          cp build/*deb ./
-          cp build/*rpm ./
-          cp build/*pkg.tar.zst ./
-          for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
-              md5sum        $package >>$package.dgst
-              shasum -a 1   $package >>$package.dgst
-              shasum -a 256 $package >>$package.dgst
-              shasum -a 512 $package >>$package.dgst
-          done
-
+          if [ -f ./build/daed-*.deb ]; then
+            cp build/*deb ./
+            cp build/*rpm ./
+            cp build/*pkg.tar.zst ./
+            for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
+                md5sum        $package >>$package.dgst
+                shasum -a 1   $package >>$package.dgst
+                shasum -a 256 $package >>$package.dgst
+                shasum -a 512 $package >>$package.dgst
+            done
+          fi
       - name: upload artifact - bundled
         uses: actions/upload-artifact@v3
         with:
