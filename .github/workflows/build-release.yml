@@ -251,7 +251,7 @@ jobs:
             daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip.dgst
             daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.deb.dgst
             daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm.dgst
-            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}..pkg.tar.zst.dgst
+            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst.dgst
             
       # - name: Upload files to GitHub release
       #   uses: svenstaro/upload-release-action@v2
