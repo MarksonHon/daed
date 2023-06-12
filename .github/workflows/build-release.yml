@@ -251,25 +251,17 @@ jobs:
                 shasum -a 512 $package >>$package.dgst
             done
           fi
-      # - name: upload artifact - bundled
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
-      #     path: build/*
-
-      - name: Upload artifact - bundled zips & packages
-        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
+      - name: upload artifact - bundled
+        uses: actions/upload-artifact@v3
         with:
-          path: |
-            daed-*.zip
-            daed-*.zip.dgst
-            daed-*.deb
-            daed-*.deb.dgst
-            daed-*.rpm
-            daed-*.dgst
-            daed-*.pkg.tar.zst
-            daed-*.pkg.tar.zst.dgst
-
+          name: daed files
+          path: | 
+            build/*zip
+            build/*deb
+            build/*rpm
+            build/*pkg.tar.zst
+            build/*dgst
+            
       - name: Upload files to GitHub release
         uses: svenstaro/upload-release-action@v2
         if: github.event_name == 'release'
