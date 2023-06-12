@@ -219,7 +219,7 @@ jobs:
             if [ "$GOAMD64" == "v1" ]; then
               for package_manager in deb rpm pacman; do
                 fpm -s dir -t "$package_manager" -a amd64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-                  --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
+                  --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.$package_manager \
                   ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
                   ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
               done
@@ -227,23 +227,23 @@ jobs:
           elif [ "$GOARCH" == "arm" ] && [ "$GOARM" == '7' ]; then
             for package_manager in deb rpm pacman; do
               fpm -s dir -t "$package_manager" -a armhf --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
+                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.$package_manager \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
                 ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
             done
           elif [ "$GOARCH" == "arm64" ]; then
             for package_manager in deb rpm pacman; do
               fpm -s dir -t "$package_manager" -a arm64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
+                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.$package_manager \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
                 ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
             done
           fi
           popd || exit 1
-          if [ -n $(ls build | grep -E ".deb|.pkg.tar.zst|.rpm") ]; then
-            cp build/*deb ./
-            cp build/*rpm ./
-            cp build/*pkg.tar.zst ./
+          if [ -f build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ]; then
+            cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ./
+            cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.rpm ./
+            cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pacman ./dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pkg.tar.zst
             for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
                 md5sum        $package >>$package.dgst
                 shasum -a 1   $package >>$package.dgst
