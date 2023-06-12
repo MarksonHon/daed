@@ -251,11 +251,24 @@ jobs:
                 shasum -a 512 $package >>$package.dgst
             done
           fi
-      - name: upload artifact - bundled
-        uses: actions/upload-artifact@v3
+      # - name: upload artifact - bundled
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
+      #     path: build/*
+
+      - name: Upload artifact - bundled zips & packages
+        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
         with:
-          name: daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
-          path: build/*
+          path: |
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip.dgst
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.deb
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.deb.dgst
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm.dgst
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst.dgst
 
       - name: Upload files to GitHub release
         uses: svenstaro/upload-release-action@v2
