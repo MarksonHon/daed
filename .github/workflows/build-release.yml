@@ -242,42 +242,55 @@ jobs:
                 cat $package.dgst
             done
           fi
-
-      - name: Upload files to GitHub release
-        uses: svenstaro/upload-release-action@v2
+      - name: upload artifact - linux
         if: github.event_name == 'release'
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file_glob: true
-          file: | 
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip*
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb*
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm*
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst*
-          overwrite: true
-          tag: ${{ github.ref }}
+        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
+        with: 
+          path: |
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
+            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb
+            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm
+            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst
+            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip.dgst
+            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb.dgst
+            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm.dgst
+            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst.dgst
+            
+      # - name: Upload files to GitHub release
+      #   uses: svenstaro/upload-release-action@v2
+      #   if: github.event_name == 'release'
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file_glob: true
+      #     file: | 
+      #       daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip*
+      #       dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb*
+      #       dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm*
+      #       dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst*
+      #     overwrite: true
+      #     tag: ${{ github.ref }}
 
-  release:
-    runs-on: ubuntu-latest
-    needs: [build-bundle, full-src]
-    if: github.event_name == 'release'
-    steps:
-      - uses: actions/checkout@v3
+  # release:
+  #   runs-on: ubuntu-latest
+  #   needs: [build-bundle, full-src]
+  #   if: github.event_name == 'release'
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: download artifact - web
-        uses: actions/download-artifact@v3
-        with:
-          name: web
-          path: dist/
+  #     - name: download artifact - web
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: web
+  #         path: dist/
 
-      - name: docker image - quay.io
-        uses: aevea/action-kaniko@master
-        with:
-          registry: quay.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.QUAY_PASS }}
-          image: ${{ github.repository }}
-          build_file: Dockerfile
-          tag_with_latest: true
-          cache: true
-          cache_registry: quay.io/${{ github.repository_owner }}/cache
+  #     - name: docker image - quay.io
+  #       uses: aevea/action-kaniko@master
+  #       with:
+  #         registry: quay.io
+  #         username: ${{ github.repository_owner }}
+  #         password: ${{ secrets.QUAY_PASS }}
+  #         image: ${{ github.repository }}
+  #         build_file: Dockerfile
+  #         tag_with_latest: true
+  #         cache: true
+  #         cache_registry: quay.io/${{ github.repository_owner }}/cache
