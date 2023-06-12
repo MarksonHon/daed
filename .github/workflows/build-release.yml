@@ -203,7 +203,7 @@ jobs:
           pushd build || exit 1
           zip -9vr ../dae-${{ steps.get_filename.outputs.ASSET_NAME }}.zip .
           popd || exit 1
-          FILE=./${{ steps.get_filename.outputs.ASSET_NAME }}.zip
+          FILE=./dae-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
           DGST=$FILE.dgst
           md5sum        $FILE >>$DGST
           shasum -a 1   $FILE >>$DGST
@@ -221,7 +221,7 @@ jobs:
                 fpm -s dir -t "$package_manager" -a amd64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
                   --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
                   ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-                  ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+                  ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
               done
             fi
           elif [ "$GOARCH" == "arm" ] && [ "$GOARM" == '7' ]; then
@@ -229,14 +229,14 @@ jobs:
               fpm -s dir -t "$package_manager" -a armhf --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
                 --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-                ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+                ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
             done
           elif [ "$GOARCH" == "arm64" ]; then
             for package_manager in deb rpm pacman; do
               fpm -s dir -t "$package_manager" -a arm64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
                 --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-                ./${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+                ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
             done
           fi
           popd || exit 1
