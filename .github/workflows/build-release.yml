@@ -224,25 +224,25 @@ jobs:
           if [ "$GOARM" != '5' ] && [ "$GOARM" != '6' ] && [ "$GOARCH" != 'mips' ] && [ "$GOARCH" != 'mipsle' ]; then
             for package_manager in deb rpm pacman; do
               fpm -s dir -t "$package_manager" -a $GOARCH --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.$package_manager \
+                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.$package_manager \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
                 ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
             done
           fi
           popd || exit 1
           if [ -f build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ]; then
-            cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ./
-            cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.rpm ./
-            cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pacman ./dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pkg.tar.zst
+            cp build/dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb ./
+            cp build/dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm ./
+            cp build/dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pacman ./dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst
             ls | grep -E ".deb|.pkg.tar.zst|.rpm"
-            for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
-                md5sum        $package >>$package.dgst
-                shasum -a 1   $package >>$package.dgst
-                shasum -a 256 $package >>$package.dgst
-                shasum -a 512 $package >>$package.dgst
+            for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm");do
+                md5sum        $package >> $package.dgst
+                shasum -a 1   $package >> $package.dgst
+                shasum -a 256 $package >> $package.dgst
+                shasum -a 512 $package >> $package.dgst
                 cat $package.dgst
             done
-          fi  
+          fi
 
       - name: Upload files to GitHub release
         uses: svenstaro/upload-release-action@v2
