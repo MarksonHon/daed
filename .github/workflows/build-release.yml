@@ -254,14 +254,13 @@ jobs:
       - name: upload artifact - bundled
         uses: actions/upload-artifact@v3
         with:
-          name: daed files
           path: | 
-            build/*zip
-            build/*deb
-            build/*rpm
-            build/*pkg.tar.zst
-            build/*dgst
-            
+            *zip*
+            *deb*
+            *rpm*
+            *pkg.tar.zst*
+            *dgst*
+
       - name: Upload files to GitHub release
         uses: svenstaro/upload-release-action@v2
         if: github.event_name == 'release'
