@@ -234,6 +234,7 @@ jobs:
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ./
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.rpm ./
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pacman ./dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pkg.tar.zst
+            ls | grep -E ".deb|.pkg.tar.zst|.rpm"
             for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
                 md5sum        $package >>$package.dgst
                 shasum -a 1   $package >>$package.dgst
