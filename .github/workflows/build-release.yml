@@ -186,9 +186,9 @@ jobs:
       - name: make
         run: |
           mkdir -p ./build/
-          export VERSION=${{ steps.get_version.outputs.VERSION }}
+          export VERSION=dae-${{ steps.get_version.outputs.VERSION }}
           export GOFLAGS="-trimpath -modcacherw"
-          export OUTPUT=build/${{ steps.get_filename.outputs.ASSET_NAME }}
+          export OUTPUT=build/dae-${{ steps.get_filename.outputs.ASSET_NAME }}
           make
           cp ./install/daed.service ./build/
           curl -L -o ./build/geoip.dat https://github.com/v2rayA/dist-v2ray-rules-dat/raw/master/geoip.dat
@@ -196,12 +196,12 @@ jobs:
 
       - name: Smoking test
         if: matrix.goarch == 'amd64' && matrix.goamd64 == 'v1'
-        run: ./build/${{ steps.get_filename.outputs.ASSET_NAME }} --version
+        run: ./build/dae-${{ steps.get_filename.outputs.ASSET_NAME }} --version
 
       - name: Create binary ZIP archive and Signature
         run: |
           pushd build || exit 1
-          zip -9vr ../${{ steps.get_filename.outputs.ASSET_NAME }}.zip .
+          zip -9vr ../dae-${{ steps.get_filename.outputs.ASSET_NAME }}.zip .
           popd || exit 1
           FILE=./${{ steps.get_filename.outputs.ASSET_NAME }}.zip
           DGST=$FILE.dgst
@@ -263,12 +263,12 @@ jobs:
           path: |
             daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
             daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip.dgst
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.deb
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.deb.dgst
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm.dgst
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst.dgst
+            daed-$VERSION.$GOARCH.deb
+            daed-$VERSION.$GOARCH.deb.dgst
+            daed-$VERSION.$GOARCH.rpm
+            daed-$VERSION.$GOARCH.rpm.dgst
+            daed-$VERSION.$GOARCH.pkg.tar.zst
+            daed-$VERSION.$GOARCH.pkg.tar.zst.dgst
 
       - name: Upload files to GitHub release
         uses: svenstaro/upload-release-action@v2
