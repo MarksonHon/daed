@@ -240,7 +240,7 @@ jobs:
             done
           fi
           popd || exit 1
-          if [ -f ./build/daed-*.deb ]; then
+          if [ -n $(ls build | grep -E ".deb|.pkg.tar.zst|.rpm") ]; then
             cp build/*deb ./
             cp build/*rpm ./
             cp build/*pkg.tar.zst ./
