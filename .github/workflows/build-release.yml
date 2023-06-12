@@ -244,7 +244,8 @@ jobs:
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ./
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.rpm ./
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pacman ./dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pkg.tar.zst
-            for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
+            packages_list="dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.rpm dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pkg.tar.zst"
+            for package in "$package_list";do
                 md5sum        $package >>$package.dgst
                 shasum -a 1   $package >>$package.dgst
                 shasum -a 256 $package >>$package.dgst
