@@ -158,9 +158,12 @@ jobs:
             count=$(git rev-list --count HEAD)
             commit=$(git rev-parse --short HEAD)
             version="unstable-$date.r${count}.$commit"
+            package_version="$date.$commit"
           fi
           echo "VERSION=$version" >> $GITHUB_OUTPUT
           echo "VERSION=$version" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$package_version" >> $GITHUB_OUTPUT
+          echo "PACKAGE_VERSION=$package_version" >> $GITHUB_ENV
 
       - name: get filename
         id: get_filename
@@ -221,7 +224,7 @@ jobs:
           sudo gem install fpm -v 1.15.1
           pushd build || exit 1
           for package_manager in deb rpm pacman; do
-            fpm -s dir -t "$package_manager" -a $GOARCH --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
+            fpm -s dir -t "$package_manager" -a $GOARCH --version "$PACKAGE_VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
               --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package daed-linux-$GOARCH$GOAMD64$GOARM.$package_manager \
               ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
               ./daed-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
