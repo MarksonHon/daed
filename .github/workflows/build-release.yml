@@ -184,9 +184,9 @@ jobs:
       - name: make
         run: |
           mkdir -p ./build/
-          export VERSION=dae-${{ steps.get_version.outputs.VERSION }}
+          export VERSION=daed-${{ steps.get_version.outputs.VERSION }}
           export GOFLAGS="-trimpath -modcacherw"
-          export OUTPUT=build/dae-${{ steps.get_filename.outputs.ASSET_NAME }}
+          export OUTPUT=build/daed-${{ steps.get_filename.outputs.ASSET_NAME }}
           make
           cp ./install/daed.service ./build/
           curl -L -o ./build/geoip.dat https://github.com/v2rayA/dist-v2ray-rules-dat/raw/master/geoip.dat
@@ -194,7 +194,7 @@ jobs:
 
       - name: Smoking test
         if: matrix.goarch == 'amd64' && matrix.goamd64 == 'v1'
-        run: ./build/dae-${{ steps.get_filename.outputs.ASSET_NAME }} --version
+        run: ./build/daed-${{ steps.get_filename.outputs.ASSET_NAME }} --version
 
       - name: Create binary ZIP archive and Signature
         run: |
