@@ -215,7 +215,7 @@ jobs:
           path: build/*
 
       - name: Build Linux packages
-        if: github.event_name == 'release'
+        # if: github.event_name == 'release'
         run: |
           sudo apt install -y libarchive-tools rpm 
           sudo gem install fpm -v 1.15.1
@@ -223,16 +223,16 @@ jobs:
           if [ "$GOARM" != '5' ] && [ "$GOARM" != '6' ] && [ "$GOARCH" != 'mips' ] && [ "$GOARCH" != 'mipsle' ]; then
             for package_manager in deb rpm pacman; do
               fpm -s dir -t "$package_manager" -a $GOARCH --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.$package_manager \
+                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package daed-linux-$GOARCH$GOAMD64$GOARM.$package_manager \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-                ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
+                ./daed-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
             done
           fi
           popd || exit 1
-          if [ -f build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ]; then
-            cp build/dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb ./
-            cp build/dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm ./
-            cp build/dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pacman ./dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst
+          if [ -f build/daed-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ]; then
+            cp build/daed-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.deb
+            cp build/daed-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
+            cp build/daed-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pacman daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst
             ls | grep -E ".deb|.pkg.tar.zst|.rpm"
             for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm");do
                 md5sum        $package >> $package.dgst
@@ -243,18 +243,18 @@ jobs:
             done
           fi
       - name: upload artifact - linux
-        if: github.event_name == 'release'
+        # if: github.event_name == 'release'
         uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
         with: 
           path: |
             daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst
+            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.deb
+            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
+            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst
             daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip.dgst
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.deb.dgst
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.rpm.dgst
-            dae-linux-$GOARCH$GOAMD64$GOARM-$VERSION.pkg.tar.zst.dgst
+            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.deb.dgst
+            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm.dgst
+            daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}..pkg.tar.zst.dgst
             
       # - name: Upload files to GitHub release
       #   uses: svenstaro/upload-release-action@v2
