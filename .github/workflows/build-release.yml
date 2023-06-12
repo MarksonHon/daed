@@ -144,6 +144,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          depth: 0
 
       - name: Get the version
         id: get_version
@@ -235,7 +237,7 @@ jobs:
           cp build/*deb ./
           cp build/*rpm ./
           cp build/*pkg.tar.zst ./
-          for package in *deb,*rpm,*pkg.tar.zst;do
+          for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
               md5sum        $package >>$package.dgst
               shasum -a 1   $package >>$package.dgst
               shasum -a 256 $package >>$package.dgst
