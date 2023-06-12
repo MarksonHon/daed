@@ -207,7 +207,33 @@ jobs:
           shasum -a 1   $FILE >>$DGST
           shasum -a 256 $FILE >>$DGST
           shasum -a 512 $FILE >>$DGST
-
+      
+      - name: Build Linux packages
+        run: |
+          sudo apt install -y libarchive-tools rpm lintian reprepro gnupg gnupg2 expect tar unzip
+          gem install fpm 1.15.1
+          pushd build || exit 1
+          export FPM_ARGS="--input-type dir --description \'daed, A Modern Dashboard For dae.\' --name daed ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat"
+          if [ "$GOARCH" == "amd64" ]; then
+            if [ "$GOAMD64" == "v1" ]; then
+              fpm $FPM_ARGS -t deb -a amd64 --version $VERSION --iteration 1 --deb-no-default-config-files --deb-priority optional --deb-compression xz --deb-field "Maintainer: daeuniverse" --deb-field "Homepage:https://github.com/daeuniverse/daed"
+            fi
+          elif [ "$GOARCH" == "arm" ]; then
+            fpm $FPM_ARGS -t deb -a armhf --version $VERSION --iteration 1 --deb-no-default-config-files --deb-priority optional --deb-compression xz --deb-field "Maintainer: daeuniverse" --deb-field "Homepage:https://github.com/daeuniverse/daed"
+          elif [ "$GOARCH" == "arm64" ]; then
+            fpm $FPM_ARGS -t deb -a arm64 --version $VERSION --iteration 1 --deb-no-default-config-files --deb-priority optional --deb-compression xz --deb-field "Maintainer: daeuniverse" --deb-field "Homepage:
+          fi
+          popd || exit 1
+          cp build/*deb ./daed-${{ steps.get_filename.outputs.ASSET_NAME }}.deb
+          cp build/*rpm ./daed-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
+          cp build/*pkg.tar.zst ./daed-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst
+          for package in *deb,*rpm,*pkg.tar.zst;do
+              md5sum        $package >>$package.dgst
+              shasum -a 1   $package >>$package.dgst
+              shasum -a 256 $package >>$package.dgst
+              shasum -a 512 $package >>$package.dgst
+          done
+          
       - name: upload artifact - bundled
         uses: actions/upload-artifact@v3
         with:
