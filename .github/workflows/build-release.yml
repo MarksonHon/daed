@@ -210,30 +210,20 @@ jobs:
           shasum -a 256 $FILE >>$DGST
           shasum -a 512 $FILE >>$DGST
       
+      - name: upload artifact - bundled
+        uses: actions/upload-artifact@v3
+        with:
+          name: daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
+          path: build/*
+
       - name: Build Linux packages
         run: |
           sudo apt install -y libarchive-tools rpm lintian reprepro gnupg gnupg2 expect tar unzip
           sudo gem install fpm -v 1.15.1
           pushd build || exit 1
-          if [ "$GOARCH" == "amd64" ]; then
-            if [ "$GOAMD64" == "v1" ]; then
-              for package_manager in deb rpm pacman; do
-                fpm -s dir -t "$package_manager" -a amd64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-                  --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.$package_manager \
-                  ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-                  ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
-              done
-            fi
-          elif [ "$GOARCH" == "arm" ] && [ "$GOARM" == '7' ]; then
+          if [ "$GOARM" != '5' ] && [ "$GOARM" != '6' ] && [ "$GOARCH" != 'mips' ] && [ "$GOARCH" != 'mipsle' ]; then
             for package_manager in deb rpm pacman; do
-              fpm -s dir -t "$package_manager" -a armhf --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
-                --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.$package_manager \
-                ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
-                ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
-            done
-          elif [ "$GOARCH" == "arm64" ]; then
-            for package_manager in deb rpm pacman; do
-              fpm -s dir -t "$package_manager" -a arm64 --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
+              fpm -s dir -t "$package_manager" -a $GOARCH --version "$VERSION" --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
                 --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT license' --package dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.$package_manager \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
                 ./dae-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
@@ -244,23 +234,14 @@ jobs:
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb ./
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.rpm ./
             cp build/dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pacman ./dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pkg.tar.zst
-            packages_list="dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.deb dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.rpm dae-linux-$GOARCH-$GOAMD64$GOARM-$VERSION.pkg.tar.zst"
-            for package in "$package_list";do
+            for package in "$(ls | grep -E ".deb|.pkg.tar.zst|.rpm")";do
                 md5sum        $package >>$package.dgst
                 shasum -a 1   $package >>$package.dgst
                 shasum -a 256 $package >>$package.dgst
                 shasum -a 512 $package >>$package.dgst
+                cat $package.dgst
             done
-          fi
-      - name: upload artifact - bundled
-        uses: actions/upload-artifact@v3
-        with:
-          path: | 
-            *zip*
-            *deb*
-            *rpm*
-            *pkg.tar.zst*
-            *dgst*
+          fi  
 
       - name: Upload files to GitHub release
         uses: svenstaro/upload-release-action@v2
