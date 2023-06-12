@@ -227,19 +227,18 @@ jobs:
               ./daed-${{ steps.get_filename.outputs.ASSET_NAME }}=/usr/bin/daed ./daed.service=/usr/lib/systemd/system/daed.service
           done
           popd || exit 1
-          if [ -f build/daed-linux-$GOARCH-$GOAMD64$GOARM.deb ]; then
-            cp build/daed-linux-$GOARCH$GOAMD64$GOARM.deb daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.deb
-            cp build/daed-linux-$GOARCH$GOAMD64$GOARM.rpm daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
-            cp build/daed-linux-$GOARCH$GOAMD64$GOARM.pacman daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst
-            ls | grep -E ".deb|.pkg.tar.zst|.rpm"
-            for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm");do
-                md5sum        $package >> $package.dgst
-                shasum -a 1   $package >> $package.dgst
-                shasum -a 256 $package >> $package.dgst
-                shasum -a 512 $package >> $package.dgst
-                cat $package.dgst
-            done
-          fi
+          cp build/daed-linux-$GOARCH$GOAMD64$GOARM.deb daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.deb
+          cp build/daed-linux-$GOARCH$GOAMD64$GOARM.rpm daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
+          cp build/daed-linux-$GOARCH$GOAMD64$GOARM.pacman daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.pkg.tar.zst
+          ls | grep -E ".deb|.pkg.tar.zst|.rpm"
+          for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm");do
+              md5sum        $package >> $package.dgst
+              shasum -a 1   $package >> $package.dgst
+              shasum -a 256 $package >> $package.dgst
+              shasum -a 512 $package >> $package.dgst
+              cat $package.dgst
+          done
+
       - name: upload artifact - linux
         # if: github.event_name == 'release'
         uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
