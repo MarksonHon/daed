@@ -261,14 +261,14 @@ jobs:
         uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
         with:
           path: |
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
-            daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip.dgst
-            daed-$VERSION.$GOARCH.deb
-            daed-$VERSION.$GOARCH.deb.dgst
-            daed-$VERSION.$GOARCH.rpm
-            daed-$VERSION.$GOARCH.rpm.dgst
-            daed-$VERSION.$GOARCH.pkg.tar.zst
-            daed-$VERSION.$GOARCH.pkg.tar.zst.dgst
+            daed-*.zip
+            daed-*.zip.dgst
+            daed-*.deb
+            daed-*.deb.dgst
+            daed-*.rpm
+            daed-*.dgst
+            daed-*.pkg.tar.zst
+            daed-*.pkg.tar.zst.dgst
 
       - name: Upload files to GitHub release
         uses: svenstaro/upload-release-action@v2
