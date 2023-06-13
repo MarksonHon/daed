@@ -153,6 +153,7 @@ jobs:
           if [[ "$REF" == "refs/tags/v"* ]]; then
             tag=$(git describe --tags $(git rev-list --tags --max-count=1))
             version=${tag}
+            package_version="$(echo ${tag} | sed s/v//g)"
           else
             date=$(git log -1 --format="%cd" --date=short | sed s/-//g)
             count=$(git rev-list --count HEAD)
