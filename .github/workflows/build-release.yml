@@ -245,10 +245,9 @@ jobs:
 
       - name: Upload artifact to releases
         if: github.event_name == 'release'
-        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.8
+        uses: softprops/action-gh-release@v1
         with: 
-          upload-release-files: true
-          path: |
+          files: |
             daed-${{ steps.get_filename.outputs.ASSET_NAME }}.zip
             daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.deb 
             daed-installer-${{ steps.get_filename.outputs.ASSET_NAME }}.rpm
