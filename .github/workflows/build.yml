@@ -224,6 +224,7 @@ jobs:
 
   upload-release:
     if: github.event_name == 'release'
+    needs: [full-src, build-bundle]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
