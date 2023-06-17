@@ -22,11 +22,6 @@ jobs:
         run: go mod vendor
         working-directory: wing
 
-      - name: Create full source ZIP archive and Signature
-        run: |
-          zip -9vr daed-full-src.zip . -x .git/\*
-          FILE=./daed-full-src.zip
-
       - name: Upload artifact - full source
         uses: actions/upload-artifact@v3
         with:
@@ -182,6 +177,12 @@ jobs:
         run: |
           zip -9vr ./${{ steps.get_filename.outputs.BUNDLE_NAME }}.zip ./bundled/*
 
+      - name: Upload ZIP archive
+        uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
+        with:
+          path: |
+            ${{ steps.get_filename.outputs.BUNDLE_NAME }}.zip
+
       - name: Build Linux packages
         if: ${{ env.GOARM != '5' && env.GOARM != '6' }}
         run: |
@@ -207,12 +208,11 @@ jobs:
             cp bundled/daed-linux-$GOARCH$GOAMD64$GOARM.pacman installer-${{ steps.get_filename.outputs.BUNDLE_NAME }}.pkg.tar.zst
           fi
 
-      - name: Upload artifact - packages
+      - name: Upload Linux packages
         if: ${{ env.GOARM != '5' && env.GOARM != '6' }}
         uses: nanoufo/action-upload-artifacts-and-release-assets@v1.5
         with:
           path: |
-            ${{ steps.get_filename.outputs.BUNDLE_NAME }}.zip
             installer-${{ steps.get_filename.outputs.BUNDLE_NAME }}.deb
             installer-${{ steps.get_filename.outputs.BUNDLE_NAME }}.rpm
             installer-${{ steps.get_filename.outputs.BUNDLE_NAME }}.pkg.tar.zst
@@ -227,11 +227,17 @@ jobs:
         with:
           path: release/
 
-      - name: Generate signature file
-        working-directory: release
+      - name: Prepare files for upload
         run: |
-          ls ./ -lh
-          for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm|.zip");do
+          cp release/*/*.deb ./
+          cp release/*/*.rpm ./
+          cp release/*/*.pkg.tar.zst ./
+          cp release/*/*.zip ./
+          zip -9vr web.zip release/web
+          tar -zcvf web.tar.gz release/web
+          zip -9vr daed-full-src.zip release/daed-full-src/*
+          tar -zcvf daed-full-src.tar.gz release/daed-full-src
+          for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm|.zip|.tar.gz");do
               md5sum        $package >> $package.dgst
               shasum -a 1   $package >> $package.dgst
               shasum -a 256 $package >> $package.dgst
@@ -256,13 +262,17 @@ jobs:
         with:
           path: release/
 
-      - name: Generate signature file
-        working-directory: release
+      - name: Prepare files for upload
         run: |
-          ls ./ -lh
-          mv */* ../
-          cd ../
-          for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm|.zip");do
+          cp release/*/*.deb ./
+          cp release/*/*.rpm ./
+          cp release/*/*.pkg.tar.zst ./
+          cp release/*/*.zip ./
+          zip -9vr web.zip release/web
+          tar -zcvf web.tar.gz release/web
+          zip -9vr daed-full-src.zip release/daed-full-src/*
+          tar -zcvf daed-full-src.tar.gz release/daed-full-src
+          for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm|.zip|.tar.gz");do
               md5sum        $package >> $package.dgst
               shasum -a 1   $package >> $package.dgst
               shasum -a 256 $package >> $package.dgst
