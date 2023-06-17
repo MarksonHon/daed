@@ -21,6 +21,10 @@ jobs:
       - name: Download wing vendor
         run: go mod vendor
         working-directory: wing
+        
+      - name: Create full source ZIP archive and Signature
+        run: |
+          zip -9vr daed-full-src.zip . -x .git/\*
 
       - name: Upload artifact - full source
         uses: actions/upload-artifact@v3
