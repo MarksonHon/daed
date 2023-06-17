@@ -213,6 +213,9 @@ jobs:
                 --url 'https://github.com/daeuniverse/daed' --description "daed, A Modern Dashboard For dae." \
                 --maintainer "daed@dae.v2raya.org" --name daed --license 'MIT AGPL' \
                 --package daed-linux-$GOARCH$GOAMD64$GOARM.$package_manager \
+                --after-install ../install/package_after_install.sh \
+                --before-remove ../install/package_before_remove.sh \
+                --after-remove ../install/package_after_remove.sh \
                 ./geoip.dat=/usr/share/daed/geoip.dat ./geosite.dat=/usr/share/daed/geosite.dat \
                 ./daed.service=/usr/lib/systemd/system/daed.service \
                 ./${{ steps.get_filename.outputs.BUNDLE_NAME }}=/usr/bin/daed
