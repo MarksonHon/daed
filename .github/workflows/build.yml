@@ -26,11 +26,6 @@ jobs:
         run: |
           zip -9vr daed-full-src.zip . -x .git/\*
           FILE=./daed-full-src.zip
-          DGST=$FILE.dgst
-          md5sum        $FILE >>$DGST
-          shasum -a 1   $FILE >>$DGST
-          shasum -a 256 $FILE >>$DGST
-          shasum -a 512 $FILE >>$DGST
 
       - name: Upload artifact - full source
         uses: actions/upload-artifact@v3
@@ -265,6 +260,8 @@ jobs:
         working-directory: release
         run: |
           ls ./ -lh
+          mv */* ../
+          cd ../
           for package in $(ls | grep -E ".deb|.pkg.tar.zst|.rpm|.zip");do
               md5sum        $package >> $package.dgst
               shasum -a 1   $package >> $package.dgst
