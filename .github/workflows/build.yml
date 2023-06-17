@@ -257,19 +257,23 @@ jobs:
               shasum -a 512 $package >> $package.dgst
           done
 
+      # - name: Upload Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     tag_name: ${{ github.ref }}
+      #     files: |
+      #       *zip
+      #       *tar.gz
+      #       *pkg.tar.zst
+      #       *deb
+      #       *rpm
+      #       *dgst
+      #     generate_release_notes: true
       - name: Upload Release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.ref }}
-          files: |
-            *zip
-            *tar.gz
-            *pkg.tar.zst
-            *deb
-            *rpm
-            *dgst
-          generate_release_notes: true
-
+          artifacts: "*zip*,*tar*,*deb*,*rpm*"
+          
   upload-prerelease:
     if: github.ref == 'refs/heads/develop'
     needs: [full-src, build-bundle]
