@@ -252,6 +252,7 @@ jobs:
 
   upload-prerelease:
     if: github.ref == 'refs/heads/develop'
+    needs: [full-src, build-bundle]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
