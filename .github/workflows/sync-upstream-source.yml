@@ -1,0 +1,34 @@
+name: Synchronize Upstream
+
+on:
+  workflow_dispatch:
+    inputs:
+      wing-head:
+        type: string
+        required: true
+        default: HEAD
+      wing-sync-message:
+        type: string
+        required: true
+        default: 'chore: upgrade dae-wing'
+
+jobs:
+  sync-wing:
+    runs-on: ubuntu-latest
+    if: ${{ inputs.wing-head }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      - name: sync wing
+        run: |
+          git checkout ${{ inputs.wing-head }}
+        working-directory: wing
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: ${{ inputs.wing-sync-message }}
+          create_branch: true
+          branch: sync-wing
